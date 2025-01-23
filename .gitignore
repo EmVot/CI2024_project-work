@@ -1,3 +1,5 @@
 #misc
 data/
 __pycache__/
+c_gen_copied.py
+prova.py

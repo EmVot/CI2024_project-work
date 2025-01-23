@@ -16,6 +16,7 @@ class treeNode:
         self.left_child = left_child
         self.right_child = right_child
 
+
     def __str__(self):
 
         '''
@@ -32,6 +33,7 @@ class treeNode:
         else:
             return self.value
     
+
     def evaluate(self,variables):
         '''
             Recursevly evaluates the expression using numpy expressions
@@ -108,7 +110,6 @@ class treeNode:
                 #print(f"Error in binary operation {self.value} with values {left_val}, {right_val}: {e}")
                 return np.nan
             
-    
 
     def validate_syntax(self, variables):
         '''
@@ -149,11 +150,14 @@ class treeNode:
         #the node is a leaf
         return True
     
+
     def validate_and_evaluate(self,lookupTable:dict):
         '''
         The expression is valid if both its syntax and the function domains are respected
         Params:
-        variables (np.ndarray): The sample lookup table
+        variables (dict): The samples lookup table
+        Returns:
+        The evaluation (np.float64) if all is correct, False instead
         '''
         variables=list(lookupTable.keys())
         syntax_validation = self.validate_syntax(variables)
@@ -164,3 +168,17 @@ class treeNode:
             return evaluation
         else:
             return False
+        
+
+    def getNodes(self,nodeList:list):
+        '''
+            Returns the nodes as a list (array) of treeNodes
+        '''
+
+        if self is None:
+            return
+        
+        nodeList.append(self)
+
+        self.left_child.getNodes(nodeList)
+        self.right_child.getNodes(nodeList)
