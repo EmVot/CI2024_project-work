@@ -4,7 +4,7 @@ from operators import UNARY_OPERATORS, BINARY_OPERATORS
 
 class treeNode:
     
-    def __init__(self, value, left_child = None, right_child= None):
+    def __init__(self, value, left_child = None, right_child= None, coefficient=1,):
         '''
         Initialize the tree node
         Params:
@@ -15,6 +15,7 @@ class treeNode:
         self.value = value
         self.left_child = left_child
         self.right_child = right_child
+        self.coefficient=coefficient
 
 
     def __str__(self):
@@ -24,14 +25,14 @@ class treeNode:
         '''
 
         if isinstance(self.value, (int, float, np.float64, np.int32)):
-            return str(np.round(self.value,3))
+            return str(self.value)
         
         elif self.value in UNARY_OPERATORS:
             return f"{self.value}({self.right_child})"
         elif self.left_child is not None or self.right_child is not None:
             return f"({self.left_child} {self.value} {self.right_child})"
         else:
-            return self.value
+            return str(self.coefficient)+" * "+self.value[0]+"["+self.value[1]+"]"
     
 
     def evaluate(self,variables):
@@ -51,7 +52,7 @@ class treeNode:
         
         if self.value in variables:
             #Leaf is a variable -> value is represented by the variable parameter to retrieve from the lookup table
-            return variables[self.value]
+            return variables[self.value]*self.coefficient
         
         #Recursion: this node is an opertator
         
@@ -111,21 +112,25 @@ class treeNode:
                 return np.nan
             
 
-    def validate_syntax(self, variables):
+    def validate_syntax(self, variables_dict:dict):
         '''
         Returns a boolean which express the possibility of the current node to be a valid tree node given these conditions:
         1) A unary operator must have at least a right child
         2) A binary operator must have both childs
         3) If it is a variable it must appear in the variables array
+        4) The expression must contain all variables
         Params:
-            variable (dictionary): lookup table for the problem variables
+            variable (dictionary): {
+                                        key (str): variable name
+                                        value (bool): it occurres in the expression
+                                    }
         Return:
             Boolean
         '''
 
         # check on the validity of the node value
 
-        if not (isinstance(self.value,(int,float)) or self.value in UNARY_OPERATORS or self.value in BINARY_OPERATORS or self.value in variables):
+        if not (isinstance(self.value,(int,float)) or self.value in UNARY_OPERATORS or self.value in BINARY_OPERATORS or self.value in variables_dict.keys()):
             #print('Invalid operator')
             return False
         
@@ -137,7 +142,7 @@ class treeNode:
                 #print('unary op must have a right child')
                 return False
             else:
-                return self.right_child.validate_syntax(variables)
+                return self.right_child.validate_syntax(variables_dict)
             
         if self.value in BINARY_OPERATORS:
             #The operator must have both childs
@@ -145,10 +150,15 @@ class treeNode:
                 #print('binary operators must have both children')
                 return False
             else:
-                return self.left_child.validate_syntax(variables) and self.right_child.validate_syntax(variables)
+                return self.left_child.validate_syntax(variables_dict) and self.right_child.validate_syntax(variables_dict)
         
         #the node is a leaf
+        if self.value in variables_dict.keys():
+            #if it is a variable its occurrency value must be updated
+            variables_dict[self.value]=True
+        
         return True
+        
     
 
     def validate_and_evaluate(self,lookupTable:dict):
@@ -159,12 +169,18 @@ class treeNode:
         Returns:
         The evaluation (np.float64) if all is correct, False instead
         '''
-        variables=list(lookupTable.keys())
-        syntax_validation = self.validate_syntax(variables)
+
+        variables_occurrencies=dict(zip(lookupTable.keys(),[False]*len(lookupTable.keys())))
+        syntax_validation = self.validate_syntax(variables_occurrencies)
+        syntax_validation = syntax_validation and np.all(list(variables_occurrencies.values()))
+
+        if not syntax_validation:
+            return False
+        
         evaluation = self.evaluate(lookupTable)
         eval_validation = not np.isnan(evaluation)
 
-        if syntax_validation and eval_validation:
+        if eval_validation:
             return evaluation
         else:
             return False
@@ -182,3 +198,9 @@ class treeNode:
 
         self.left_child.getNodes(nodeList)
         self.right_child.getNodes(nodeList)
+
+    def getDepth(self,depth):
+        if self.value in BINARY_OPERATORS or self.value in UNARY_OPERATORS:
+            return max(self.left_child.getDepth(depth+1),self.right_child.getDepth(depth+1))
+        else:
+            return depth

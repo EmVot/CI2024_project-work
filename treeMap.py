@@ -22,7 +22,6 @@ class treeMap:
 
         nodeList=[]
         return random.choice(self.root.getNodes(nodeList))
-    
 
     def validate_and_evaluate(self,x_values:np.ndarray):
         '''
@@ -55,17 +54,29 @@ class treeMap:
 
         return mse(y_values,y_pred)
 
+    def __str__(self):
+        return self.root.__str__()
+    
+    def getDepth(self):
 
-def generate_random_expression(depth, variables, constants):
+        def deep_traversing(node:treeNode,depth):
+            if node is None:
+                return 0
+            else:
+                return 1 + max(deep_traversing(node.left_child,depth),deep_traversing(node.right_child,depth))
+        
+        return deep_traversing(self.root,0)
+
+def generate_random_expression(depth, variables, constants, variable_coefficient_range_dict):
 
 
     def select_leaf_function(variables:dict, constants):
         '''
-            This function picks a leaf based on probability, dependent on the number of 
+            This function picks a leaf based on probability, dependent on the number of
             unpicked variables and the times a variable has been chosen.
 
             Parameters:
-            - variables (dict): A dictionary where keys are variable names and values 
+            - variables (dict): A dictionary where keys are variable names and values
             represent the number of times each variable has been chosen.
             - constants (list): A list of possible constant values.
 
@@ -103,7 +114,7 @@ def generate_random_expression(depth, variables, constants):
             # Probability to choose an unchosen variable antiproportional to its  choosing frequence
             frequencies = [v for v in variables.values()]
             
-            probabilities = [1 / (f + 1) for f in frequencies]
+            probabilities = [1 / (f**2 + 1) for f in frequencies]
             
             # Probabilities normalization
             p_sum=sum(probabilities)
@@ -119,11 +130,14 @@ def generate_random_expression(depth, variables, constants):
         
         if unchosen_variables:
             # probability of choosing a constant are antiproportional to the number of unchosen variables
-            p = len(unchosen_variables) / len(variables)
+            p = 1.8*(len(unchosen_variables) / len(variables))
         
-        else:
+        if len(unchosen_variables) <= 2:
+            p=1
+        
+        elif len(unchosen_variables)==0:
             # if there are no left variables the probability of choosing a constant is fixed
-            p = 0.5
+            p = 0.7
 
         # we choose a random constant with p, a variable otherwise
         if random.random() > p:
@@ -131,35 +145,32 @@ def generate_random_expression(depth, variables, constants):
         else:
             return choose_variable(variables)
             
-
-    
     # leaves must be constants or variables
-    if depth == 0:
-        return treeNode(select_leaf_function(variables,constants))
-    
-    # all others can be whatever
-    else:
-        p = random.random() < 0.9 #probability of choosing an operator (preferred)
+    if depth == 0 or random.random() > 0.85:
+        leaf=select_leaf_function(variables,constants)
+        if leaf in variables:
+            variable_coefficient_range=variable_coefficient_range_dict[leaf]
+            return treeNode(leaf,coefficient=random.choice(np.linspace(variable_coefficient_range[0],variable_coefficient_range[1],20)))
+        else:
+            return treeNode(leaf)
         
-        if p:
-            if random.random() < 0.5:
-                # Choose a random unary operator
-                operation = random.choice(list(UNARY_OPERATORS.keys()))
-                right_child = generate_random_expression(depth - 1, variables, constants)
-                return treeNode(operation, right_child=right_child)
-            else:
-                # Choose a random binary operator
-                operation = random.choice(list(BINARY_OPERATORS.keys()))
-                
-                #randomize the descent direction to avoid having all the variables at the left of the tree
-                if random.random() < 0.5:
-                    left_child = generate_random_expression(depth - 1, variables, constants)
-                    right_child = generate_random_expression(depth - 1, variables, constants)
-                else:
-                    left_child = generate_random_expression(depth - 1, variables, constants)
-                    right_child = generate_random_expression(depth - 1, variables, constants)
+        # all others can be whatever
 
-                return treeNode(operation, left_child=left_child, right_child=right_child)
+    if random.random() < 0.5:
+        # Choose a random unary operator
+        operation = random.choice(list(UNARY_OPERATORS.keys()))
+        right_child = generate_random_expression(depth - 1, variables, constants,variable_coefficient_range_dict)
+        return treeNode(operation, right_child=right_child)
+    else:
+        # Choose a random binary operator
+        operation = random.choice(list(BINARY_OPERATORS.keys()))
         
-        else:   #we put a leaf even if we do not reach the maximum depth
-            return treeNode(select_leaf_function(variables,constants))
+        #randomize the descent direction to avoid having all the variables at the left of the tree
+        if random.random() < 0.5:
+            left_child = generate_random_expression(depth - 1, variables, constants,variable_coefficient_range_dict)
+            right_child = generate_random_expression(depth - 1, variables, constants,variable_coefficient_range_dict)
+        else:
+            right_child = generate_random_expression(depth - 1, variables, constants,variable_coefficient_range_dict)
+            left_child = generate_random_expression(depth - 1, variables, constants,variable_coefficient_range_dict)
+
+        return treeNode(operation, left_child=left_child, right_child=right_child)

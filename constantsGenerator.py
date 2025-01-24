@@ -49,7 +49,7 @@ def coefficient_range(problem: np.ndarray) -> Dict[str, Tuple[float, float]]:
 
     scaled_coefficients = coefficient_scaler(problem)
 
-    coefficient_ranges = [(-sc * 10, sc * 10) for sc in scaled_coefficients]
+    coefficient_ranges = [(-sc * 5, sc * 5) for sc in scaled_coefficients]
 
     return dict(zip(variables, coefficient_ranges))
 
