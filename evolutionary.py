@@ -22,7 +22,7 @@ def spawn_offspring(individuals:int, max_depth:int, constant_range:tuple, proble
 
     variables_coefficients_dict=coefficient_range(problem)
     offspring=[]
-    constants=np.linspace(constant_range[0],constant_range[1],10) + 1e-9 #avoid generating null costants
+    constants=np.linspace(constant_range[0],constant_range[1],50) + 1e-9 #avoid generating null costants
     constants = constants.tolist()
     variables = [f"x{index}" for index in range(x_values.shape[0])]
     
@@ -294,15 +294,9 @@ def evolutionary_algorithm(population_size,offspring_size,generations,selective_
 
     print("Began EA")
 
-    x_values=problem['x']
-
     constant_range=np.linspace(const_range[0],const_range[1],10)
 
     population=spawn_offspring(population_size,max_expression_depth,constant_range,problem)
-
-    depths=[ind.getDepth() for ind in population]
-    
-    print(f'initial population depth: {np.mean(depths)}')
 
     for gen in range(generations):
 

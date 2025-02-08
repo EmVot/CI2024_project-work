@@ -2,6 +2,8 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 from operators import UNARY_OPERATORS, BINARY_OPERATORS
+from scipy.stats import norm
+import pdb
 
 def build_graph(graph, node, pos=None, parent=None, edge_label=None, x=0, y=0, layer=1, labels=None):
     """
@@ -43,5 +45,3 @@ def plot_tree(root):
     nx.draw_networkx_edge_labels(graph, pos, edge_labels=edge_labels)
 
     plt.show()
-
-def simplify_expression():...

@@ -150,7 +150,7 @@ def generate_random_expression(depth, variables, constants, variable_coefficient
         leaf=select_leaf_function(variables,constants)
         if leaf in variables:
             variable_coefficient_range=variable_coefficient_range_dict[leaf]
-            return treeNode(leaf,coefficient=random.choice(np.linspace(variable_coefficient_range[0],variable_coefficient_range[1],20)))
+            return treeNode(leaf,coefficient=random.choice(np.linspace(variable_coefficient_range[0],variable_coefficient_range[1],25)))
         else:
             return treeNode(leaf)
         

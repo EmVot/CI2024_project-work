@@ -3,3 +3,5 @@ data/
 __pycache__/
 c_gen_copied.py
 prova.py
+expression results_1.txt
+expression results.txt

@@ -1,7 +1,7 @@
 import numpy as np
 from typing import Dict, Tuple
 
-EPSILON = 1e-8  #  global constant to avoid zero divisions
+EPSILON = 1e-18  #  global constant to avoid zero divisions
 
 def coefficient_scaler(problem: np.ndarray) -> np.ndarray:
     """
@@ -23,7 +23,7 @@ def coefficient_scaler(problem: np.ndarray) -> np.ndarray:
     y_values = problem['y']
 
     y_std = np.std(y_values) + EPSILON  # Avoid 0 division
-    x_std = np.std(x_values, axis=1) + EPSILON  # Per-feature standard deviation
+    x_std = np.std(x_values, axis=0) + EPSILON  # Per-feature standard deviation
 
     return y_std / x_std
 
@@ -49,7 +49,7 @@ def coefficient_range(problem: np.ndarray) -> Dict[str, Tuple[float, float]]:
 
     scaled_coefficients = coefficient_scaler(problem)
 
-    coefficient_ranges = [(-sc * 5, sc * 5) for sc in scaled_coefficients]
+    coefficient_ranges = [(-sc * 2, sc * 2) for sc in scaled_coefficients]
 
     return dict(zip(variables, coefficient_ranges))
 

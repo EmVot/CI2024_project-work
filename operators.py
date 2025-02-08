@@ -15,6 +15,7 @@ UNARY_OPERATORS = {
     "cos": np.cos,
     "tan": np.tan,
     "log": np.log,
+    "exp": np.exp,
     "arccos": np.arccos,
     "arcsin": np.arcsin,
     "arctan": np.arctan,
