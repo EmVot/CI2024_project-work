@@ -32,9 +32,7 @@ def build_graph(graph, node, pos=None, parent=None, edge_label=None, x=0, y=0, l
     return graph, pos, labels
 
 def plot_tree(root):
-    """
-    Visualizza l'albero utilizzando NetworkX e Matplotlib, mostrando il contenuto di ogni nodo e il coefficiente delle variabili.
-    """
+
     graph = nx.DiGraph()
     graph, pos, labels = build_graph(graph, root)
     

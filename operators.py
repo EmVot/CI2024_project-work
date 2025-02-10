@@ -6,7 +6,6 @@ BINARY_OPERATORS = {
     '-' : np.subtract,
     '*' : np.multiply,
     '/' : lambda x, y: x / y if y != 0 else 1,
-    #'^' : np.power
 }
 
 UNARY_OPERATORS = {
@@ -15,7 +14,6 @@ UNARY_OPERATORS = {
     "cos": np.cos,
     "tan": np.tan,
     "log": np.log,
-    "exp": np.exp,
     "arccos": np.arccos,
     "arcsin": np.arcsin,
     "arctan": np.arctan,

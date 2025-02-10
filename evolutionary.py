@@ -38,7 +38,6 @@ def spawn_offspring(individuals:int, max_depth:int, constant_range:tuple, proble
         
         newChild = treeMap(max_depth,variables,constants,expr)
         offspring.append(newChild)
-        print(len(offspring))
 
     return offspring
 
@@ -292,20 +291,19 @@ def tournament_selection(population:list,selective_pressure:int,problem:np.ndarr
 
 def evolutionary_algorithm(population_size,offspring_size,generations,selective_presure,max_expression_depth,problem,const_range)->treeMap:
 
-    print("Began EA")
-
     constant_range=np.linspace(const_range[0],const_range[1],10)
 
     population=spawn_offspring(population_size,max_expression_depth,constant_range,problem)
 
     for gen in range(generations):
 
-        print(f'Generation {gen}')
+        print(f'Geneartion: {gen}')
         #1: create offspring
         offspring=create_offspring(population,offspring_size,problem,constant_range,max_expression_depth)
         #2: tournament selection and parent selection (they are made both in tournament slection)
         population.extend(offspring)
         population=tournament_selection(population,selective_presure,problem)
+        
 
     fitnesses=list(map(lambda ind: ind.fitness(problem),population))
     
