@@ -26,7 +26,7 @@ def spawn_offspring(individuals:int, max_depth:int, constant_range:tuple, proble
     constants = constants.tolist()
     variables = [f"x{index}" for index in range(x_values.shape[0])]
     
-    for _ in range(individuals):
+    for ind in range(individuals):
 
         variables_dict=dict(zip(variables,[0] * len(variables)))
         expr = spawn(max_depth,deepcopy(variables_dict),constants,variables_coefficients_dict)
@@ -38,6 +38,8 @@ def spawn_offspring(individuals:int, max_depth:int, constant_range:tuple, proble
         
         newChild = treeMap(max_depth,variables,constants,expr)
         offspring.append(newChild)
+
+        print(ind)
 
     return offspring
 
@@ -295,6 +297,9 @@ def evolutionary_algorithm(population_size,offspring_size,generations,selective_
 
     population=spawn_offspring(population_size,max_expression_depth,constant_range,problem)
 
+    avg_fitnesses=[]
+
+
     for gen in range(generations):
 
         print(f'Geneartion: {gen}')
@@ -303,7 +308,9 @@ def evolutionary_algorithm(population_size,offspring_size,generations,selective_
         #2: tournament selection and parent selection (they are made both in tournament slection)
         population.extend(offspring)
         population=tournament_selection(population,selective_presure,problem)
-        
+        current_avg_fitness = np.mean(list(map(lambda ind: ind.fitness(problem),population)))
+        avg_fitnesses.append(current_avg_fitness)
+    
 
     fitnesses=list(map(lambda ind: ind.fitness(problem),population))
     

@@ -43,10 +43,10 @@ class treeMap:
         
         return y_estimate
     
-    def fitness(self,problem):
+    def fitness(self,problem) -> np.float64:
 
-        def mse(y_true, y_pred):
-            return np.mean((y_true - y_pred) ** 2)
+        def mse(y_true, y_pred) -> np.float64:
+            return np.mean((y_true - y_pred) ** 2,dtype=np.float64)
 
         x_values = problem['x']
         y_values = problem['y']
