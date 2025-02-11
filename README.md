@@ -5,6 +5,7 @@ SymReg project for Computational Intelligence Course
 ## Overview
 
 This project implements an **Evolutionary Algorithm (EA)** for **Symbolic Regression**, which aims to find mathematical expressions that best fit a given dataset. The core idea is to evolve populations of expression trees over multiple generations using genetic programming techniques.
+For more insights please read the `Project work` section of my report
 
 
 ## Code Organization

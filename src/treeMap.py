@@ -137,7 +137,7 @@ def generate_random_expression(depth, variables, constants, variable_coefficient
         
         elif len(unchosen_variables)==0:
             # if there are no left variables the probability of choosing a constant is fixed
-            p = 0.7
+            p = 0.5
 
         # we choose a random constant with p, a variable otherwise
         if random.random() > p:

@@ -13,9 +13,10 @@ def spawn_offspring(individuals:int, max_depth:int, constant_range:tuple, proble
     Params:
     individuals (int): number of individuals
     max_depth (int): max depth of the expression generated
-    x_vals (np.ndarray): the problem x values
+    constant:range (tuple): the problem constants
+    problem (np.ndarray): the dictionary containing the input and output values of the problem
     Returns:
-    The offspring
+    The offspring (list[treeMap])
     '''
 
     x_values=problem['x']
@@ -47,6 +48,9 @@ def spawn_offspring(individuals:int, max_depth:int, constant_range:tuple, proble
 def crossover(parents: list, x_values: np.ndarray):
     """
     Performs subtree crossover ensuring the resulting offspring do not exceed allowed_depth.
+    Args:
+        parents (list[treeMap]): the treeMaps representing the parent population
+        x_values (np.ndarray): problem input values
     """
     
     allowed_depth = parents[0].max_depth+1
@@ -126,7 +130,7 @@ def mutation(offspring,max_depth,problem,constants) -> list:
     Parameters:
         offspring (list): A list of `treeMap` objects representing the current population.
         max_depth (int): The maximum depth allowed for generated subtrees in mutation.
-        x_values (list): The list of available variables in the expressions.
+        problem (dict): Problem input andd outputs collected in a dictionary.
         constants (list): A list of numerical constants available for the expressions.
 
     Returns:
@@ -259,16 +263,35 @@ def create_offspring(parents,offspringSize,problem,constants,max_depth)->list[tr
     
     offspring=[]
     x_values=problem['x']
+    performed_crossovers=0
+    max_crossovers = 1e3
 
-    while len(offspring) < offspringSize:
+    while len(offspring) < offspringSize and performed_crossovers < max_crossovers:
         offspring.extend(crossover(parents,x_values))
 
+    if len(offspring) < offspringSize:
+        offspring.extend(spawn_offspring(offspringSize-len(offspring),max_depth,constants,problem))
     
     offspring=mutation(offspring,max_depth,problem,constants)
 
     return offspring
 
-def tournament_selection(population:list,selective_pressure:int,problem:np.ndarray)->list[treeMap]:
+def tournament_selection(population: list, selective_pressure: int, problem: np.ndarray) -> list:
+    """
+    Performs tournament selection to choose a subset of the population based on fitness.
+
+    This function iterates through the population, selecting groups of individuals (arenas)
+    and sorting them based on their fitness. Only the top-performing individuals from each
+    arena survive to the next generation.
+
+    Parameters:
+        population (list): The current population of individuals.
+        selective_pressure (int): The number of individuals competing in each tournament round.
+        problem (np.ndarray): The problem dataset used for evaluating fitness.
+
+    Returns:
+        list: A subset of the original population that survived the selection process.
+    """
 
     survivors = []
 
@@ -291,13 +314,38 @@ def tournament_selection(population:list,selective_pressure:int,problem:np.ndarr
 
     return survivors
 
-def evolutionary_algorithm(population_size,offspring_size,generations,selective_presure,max_expression_depth,problem,const_range)->treeMap:
+def evolutionary_algorithm(
+    population_size: int,
+    offspring_size: int,
+    generations: int,
+    selective_presure: int,
+    max_expression_depth: int,
+    problem: dict,
+    const_range: tuple
+) -> treeMap:
+    """
+    Runs an evolutionary algorithm to evolve expressions over multiple generations.
+
+    This function initializes a population, generates offspring through crossover and mutation,
+    and applies tournament selection to evolve solutions iteratively.
+
+    Parameters:
+        population_size (int): The number of individuals in the initial population.
+        offspring_size (int): The number of offspring generated per generation.
+        generations (int): The number of evolutionary iterations.
+        selective_presure (int): The number of individuals competing in each tournament.
+        max_expression_depth (int): The maximum allowed depth for expression trees.
+        problem (dict): The problem dataset descibed by a dictionry of keys 'x' and 'y'
+        const_range (tuple): The range of numerical constants available for expressions.
+
+    Returns:
+        treeMap: The best individual from the final generation based on fitness.
+    """
 
     constant_range=np.linspace(const_range[0],const_range[1],10)
 
     population=spawn_offspring(population_size,max_expression_depth,constant_range,problem)
 
-    avg_fitnesses=[]
 
 
     for gen in range(generations):
@@ -308,8 +356,6 @@ def evolutionary_algorithm(population_size,offspring_size,generations,selective_
         #2: tournament selection and parent selection (they are made both in tournament slection)
         population.extend(offspring)
         population=tournament_selection(population,selective_presure,problem)
-        current_avg_fitness = np.mean(list(map(lambda ind: ind.fitness(problem),population)))
-        avg_fitnesses.append(current_avg_fitness)
     
 
     fitnesses=list(map(lambda ind: ind.fitness(problem),population))
