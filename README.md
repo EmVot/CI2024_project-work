@@ -9,9 +9,8 @@ For more insights please read the `Project work` section of my report
 
 
 ## Code Organization
-### src folder
-`src` folder contains all the source material used for representation and evolutionary algorithm.
---- 
+### src
+#### Contains all the source material used for representation and evolutionary algorithm.
 `evolutionary.py` contains all the methods used for the EA, from crossover to tournament selection.
 Its main function is `evolutionary_algorithm` which acts as a general wrapper for the evolutionary process.
 `node.py` contains the individual representation, which will be explained in detail in the following section.
@@ -23,7 +22,7 @@ Moreover the function `generate_random_expression` represent the main function f
 `operatos.py` is a collection of operators considered.
 
 ### data folder
-Contains all the data used for training
+#### Contains all the data used for training
 
 
 ## Individual Representation
