@@ -27,7 +27,7 @@ def spawn_offspring(individuals:int, max_depth:int, constant_range:tuple, proble
     constants = constants.tolist()
     variables = [f"x{index}" for index in range(x_values.shape[0])]
     
-    for ind in range(individuals):
+    for _ in range(individuals):
 
         variables_dict=dict(zip(variables,[0] * len(variables)))
         expr = spawn(max_depth,deepcopy(variables_dict),constants,variables_coefficients_dict)
@@ -39,8 +39,6 @@ def spawn_offspring(individuals:int, max_depth:int, constant_range:tuple, proble
         
         newChild = treeMap(max_depth,variables,constants,expr)
         offspring.append(newChild)
-
-        print(ind)
 
     return offspring
 
