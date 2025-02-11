@@ -13,12 +13,18 @@ For more insights please read the `Project work` section of my report
 #### Contains all the source material used for representation and evolutionary algorithm.
 `evolutionary.py` contains all the methods used for the EA, from crossover to tournament selection.
 Its main function is `evolutionary_algorithm` which acts as a general wrapper for the evolutionary process.
+
 `node.py` contains the individual representation, which will be explained in detail in the following section.
+
 `treeMap.py` contains the main wrapper class for the expression representation, with the omonimus class.
 Moreover the function `generate_random_expression` represent the main function for the generation of valid random expressions (with respect to a given problem)
-`utils.py` contains the functions for expression representation
-`constantsGenerator.py` contains functions for variable coefficient generator, with the main function `coefficient_range` (see report and code docstring for more details)
-`train.py` acts as a train wrapper function for alle the problems given. It defines all the variables used for EA
+
+`utils.py` contains the functions for expression representation.
+
+`constantsGenerator.py` contains functions for variable coefficient generator, with the main function `coefficient_range` (see report and code docstring for more details).
+
+`train.py` acts as a train wrapper function for alle the problems given. It defines all the variables used for EA.
+
 `operatos.py` is a collection of operators considered.
 
 ### data folder
